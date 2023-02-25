@@ -83,8 +83,16 @@ class MainActivity : AppCompatActivity(), SurfaceTexture.OnFrameAvailableListene
             onCreatedTextureIds = { backCameraTextureId, frontCameraTextureId ->
                 // onSurfaceCreated のあとに呼ばれる
                 surfaceTextureList.clear()
-                surfaceTextureList += SurfaceTexture(backCameraTextureId).apply { setOnFrameAvailableListener(this@MainActivity) }
-                surfaceTextureList += SurfaceTexture(frontCameraTextureId).apply { setOnFrameAvailableListener(this@MainActivity) }
+                // バックカメラ、フロントカメラ それぞれ SurfaceTexture を作成する
+                // SurfaceTexture の場合は setDefaultBufferSize で解像度の設定ができる
+                surfaceTextureList += SurfaceTexture(backCameraTextureId).apply {
+                    setDefaultBufferSize(CAMERA_RESOLTION_WIDTH, CAMERA_RESOLTION_HEIGHT)
+                    setOnFrameAvailableListener(this@MainActivity)
+                }
+                surfaceTextureList += SurfaceTexture(frontCameraTextureId).apply {
+                    setDefaultBufferSize(CAMERA_RESOLTION_WIDTH, CAMERA_RESOLTION_HEIGHT)
+                    setOnFrameAvailableListener(this@MainActivity)
+                }
 
                 // カメラを開いて、配列に入れる
                 val textureSurfaceList = surfaceTextureList.map { Surface(it) }
@@ -123,6 +131,16 @@ class MainActivity : AppCompatActivity(), SurfaceTexture.OnFrameAvailableListene
             }
         }
         return backCameraId to frontCameraId
+    }
+
+    companion object {
+
+        /** 720P 解像度 幅 */
+        private const val CAMERA_RESOLTION_WIDTH = 1280
+
+        /** 720P 解像度 高さ */
+        private const val CAMERA_RESOLTION_HEIGHT = 720
+
     }
 
 }
