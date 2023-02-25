@@ -2,6 +2,7 @@ package io.github.takusan23.wipecamera
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity(), SurfaceTexture.OnFrameAvailableListene
         // SurfaceTexture を利用して OpenGL 側でカメラ映像をテクスチャとして利用できるようにする
         val cameraGlSurfaceView = CameraGlSurfaceView(
             context = this@MainActivity,
+            rotation = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) 90f else 0f,
             onCreatedTextureIds = { backCameraTextureId, frontCameraTextureId ->
                 // onSurfaceCreated のあとに呼ばれる
                 surfaceTextureList.clear()

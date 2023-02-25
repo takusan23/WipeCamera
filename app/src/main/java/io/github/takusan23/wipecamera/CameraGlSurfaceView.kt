@@ -14,6 +14,7 @@ import android.opengl.GLSurfaceView
  */
 class CameraGlSurfaceView(
     context: Context,
+    rotation: Float,
     onCreatedTextureIds: (backCameraTextureId: Int, frontCameraTextureId: Int) -> Unit,
     onRequestBackCameraSurfaceTexture: () -> SurfaceTexture,
     onRequestFrontCameraSurfaceTexture: () -> SurfaceTexture,
@@ -24,7 +25,7 @@ class CameraGlSurfaceView(
         setEGLContextClientVersion(2)
         // GL Thread
         // OpenGL の操作はスレッドを考慮しないといけない、、、
-        val cameraGlRenderer = CameraGlRenderer(onCreatedTextureIds, onRequestBackCameraSurfaceTexture, onRequestFrontCameraSurfaceTexture)
+        val cameraGlRenderer = CameraGlRenderer(rotation, onCreatedTextureIds, onRequestBackCameraSurfaceTexture, onRequestFrontCameraSurfaceTexture)
         setRenderer(cameraGlRenderer)
     }
 

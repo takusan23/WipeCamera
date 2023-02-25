@@ -14,11 +14,13 @@ import javax.microedition.khronos.opengles.GL10
  * カメラをレンダリングする
  * カメラの映像は、[SurfaceTexture]を利用することで、OpenGLのテクスチャとして利用ができる。
  *
+ * @param rotation 画面が回転している場合、テクスチャも回転させる必要があるので
  * @param onCreatedTextureIds フロントカメラのテクスチャID、バックカメラのテクスチャIDを返す
  * @param onRequestBackCameraSurfaceTexture バックカメラの [SurfaceTexture]
  * @param onRequestFrontCameraSurfaceTexture フロントカメラの [SurfaceTexture]
  */
 class CameraGlRenderer(
+    private val rotation: Float,
     private val onCreatedTextureIds: (backCameraTextureId: Int, frontCameraTextureId: Int) -> Unit,
     private val onRequestBackCameraSurfaceTexture: () -> SurfaceTexture,
     private val onRequestFrontCameraSurfaceTexture: () -> SurfaceTexture,
@@ -201,8 +203,10 @@ class CameraGlRenderer(
         // バックカメラを描画するフラグを立てる
         // ----
         GLES20.glUniform1i(uDrawBackCameraHandle, 1)
-        // アスペクト比を調整する
+        // Matrix.XXX のユーティリティー関数で行列の操作をする場合、適用させる順番に注意する必要があります
         Matrix.setIdentityM(mMVPMatrix, 0)
+        // 画面回転している場合は回転する
+        Matrix.rotateM(mMVPMatrix, 0, rotation, 0f, 0f, 1f)
 
         // 横幅を計算して合わせる
         // 縦は outputHeight 最大まで
@@ -243,12 +247,14 @@ class CameraGlRenderer(
         // バックカメラを描画するフラグを下ろしてフロントカメラにする
         // ----
         GLES20.glUniform1i(uDrawBackCameraHandle, 0)
-        // アスペクト比を調整する
+        // Matrix.XXX のユーティリティー関数で行列の操作をする場合、適用させる順番に注意する必要があります
         Matrix.setIdentityM(mMVPMatrix, 0)
         // 右上に移動させる
         Matrix.translateM(mMVPMatrix, 0, 1f - 0.3f, 1f - 0.3f, 1f)
         // 半分ぐらいにする
         Matrix.scaleM(mMVPMatrix, 0, 0.3f, 0.3f, 1f)
+        // 画面回転している場合は回転する
+        Matrix.rotateM(mMVPMatrix, 0, rotation, 0f, 0f, 1f)
 
         // 横幅を計算して合わせる
         // 縦は outputHeight 最大まで
