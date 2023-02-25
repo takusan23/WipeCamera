@@ -15,7 +15,7 @@ import kotlin.coroutines.suspendCoroutine
 class Camera(
     context: Context,
     private val cameraId: String,
-    private val outputSurface: Surface
+    private val outputSurfaceList: List<Surface>
 ) {
     private val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private val cameraExecutor = Executors.newSingleThreadExecutor()
@@ -26,9 +26,15 @@ class Camera(
         this.cameraDevice = cameraDevice
 
         val captureRequest = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).apply {
-            addTarget(outputSurface)
+            outputSurfaceList.forEach {
+                addTarget(it)
+            }
         }.build()
-        val outputList = listOf(OutputConfiguration(outputSurface))
+        val outputList = buildList {
+            outputSurfaceList.forEach {
+                add(OutputConfiguration(it))
+            }
+        }
 
         SessionConfiguration(SessionConfiguration.SESSION_REGULAR, outputList, cameraExecutor, object : CameraCaptureSession.StateCallback() {
             override fun onConfigured(captureSession: CameraCaptureSession) {

@@ -3,28 +3,23 @@ package io.github.takusan23.wipecamera
 import android.graphics.SurfaceTexture
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
-import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import javax.microedition.khronos.egl.EGLConfig
-import javax.microedition.khronos.opengles.GL10
 
 /**
  * カメラをレンダリングする
  * カメラの映像は、[SurfaceTexture]を利用することで、OpenGLのテクスチャとして利用ができる。
  *
  * @param rotation 画面が回転している場合、テクスチャも回転させる必要があるので
- * @param onCreatedTextureIds フロントカメラのテクスチャID、バックカメラのテクスチャIDを返す
  * @param onRequestBackCameraSurfaceTexture バックカメラの [SurfaceTexture]
  * @param onRequestFrontCameraSurfaceTexture フロントカメラの [SurfaceTexture]
  */
 class CameraGlRenderer(
     private val rotation: Float,
-    private val onCreatedTextureIds: (backCameraTextureId: Int, frontCameraTextureId: Int) -> Unit,
     private val onRequestBackCameraSurfaceTexture: () -> SurfaceTexture,
     private val onRequestFrontCameraSurfaceTexture: () -> SurfaceTexture,
-) : GLSurfaceView.Renderer {
+) {
 
     private val mMVPMatrix = FloatArray(16)
     private val mSTMatrix = FloatArray(16)
@@ -53,19 +48,8 @@ class CameraGlRenderer(
     private var uBackCameraTextureHandle = 0
     private var uDrawBackCameraHandle = 0
 
-    override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-        // GL Thread
-        // OpenGL の操作はスレッドを考慮しないといけない、、、
-        val (backCameraTextureId, frontCameraTextureId) = setupProgram()
-        onCreatedTextureIds(backCameraTextureId, frontCameraTextureId)
-    }
-
-    override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
-        // do nothing
-    }
-
-    // requestRender のたびに呼ばれる
-    override fun onDrawFrame(gl: GL10?) {
+    /** 描画する */
+    fun onDrawFrame() {
         prepareDraw()
         drawBackCamera(onRequestBackCameraSurfaceTexture())
         drawFrontCamera(onRequestFrontCameraSurfaceTexture())
@@ -159,7 +143,7 @@ class CameraGlRenderer(
     }
 
     /** 描画前に呼び出す */
-    fun prepareDraw() {
+    private fun prepareDraw() {
         // glError 1282 の原因とかになる
         GLES20.glUseProgram(mProgram)
         checkGlError("glUseProgram")
