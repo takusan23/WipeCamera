@@ -60,6 +60,9 @@ class MainActivity : AppCompatActivity(), SurfaceTexture.OnFrameAvailableListene
      */
     private val useCameraList = mutableListOf<Camera>()
 
+    /** ファイルの保存先 */
+    private var mediaRecorderFile: File? = null
+
     /** [MediaRecorder] */
     private val mediaRecorder by lazy {
         (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) MediaRecorder(this) else MediaRecorder()).apply {
@@ -74,7 +77,11 @@ class MainActivity : AppCompatActivity(), SurfaceTexture.OnFrameAvailableListene
         }
     }
 
-    var isRecording = false
+    /** [SurfaceTexture.OnFrameAvailableListener]が呼び出されたら更新されます */
+    private var latestUpdate = 0L
+
+    /** 録画中は true */
+    private var isRecording = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,19 +114,23 @@ class MainActivity : AppCompatActivity(), SurfaceTexture.OnFrameAvailableListene
                     Toast.makeText(this@MainActivity, "録画開始", Toast.LENGTH_SHORT).show()
                     viewBinding.recordButton.setImageResource(R.drawable.outline_stop_24)
                     startRecord()
+                    isRecording = true
                 } else {
-                    Toast.makeText(this@MainActivity, "終了", Toast.LENGTH_SHORT).show()
-                    viewBinding.recordButton.setImageResource(R.drawable.outline_videocam_24)
+                    // 終了する
+                    isRecording = false
                     mediaRecorder.stop()
                     mediaRecorder.reset()
+                    // MediaStore (ギャラリーアプリ) に登録する
+                    MediaStoreTool.insertVideo(this@MainActivity, mediaRecorderFile!!)
+                    mediaRecorderFile?.delete()
+                    // 次の録画用に
                     setMediaRecorderParams(mediaRecorder)
+                    Toast.makeText(this@MainActivity, "終了", Toast.LENGTH_SHORT).show()
+                    viewBinding.recordButton.setImageResource(R.drawable.outline_videocam_24)
                 }
-                isRecording = !isRecording
             }
         }
     }
-
-    private var latestUpdate = 0L
 
     /**
      * SurfaceTexture (カメラのフレーム) が更新されたら呼ばれる
@@ -133,9 +144,14 @@ class MainActivity : AppCompatActivity(), SurfaceTexture.OnFrameAvailableListene
 
     override fun onDestroy() {
         super.onDestroy()
+        // リソース開放
         surfaceInputOpenGlList.forEach { it.release() }
         surfaceTextureList.forEach { it.release() }
         useCameraList.forEach { it.destroy() }
+        // 使わなかったファイルを削除（録画のためにファイルを作ったが、実際は録画しなかった）
+        if (mediaRecorderFile?.length() == 0L) {
+            mediaRecorderFile?.delete()
+        }
     }
 
     /** カメラの初期化をする */
@@ -273,8 +289,9 @@ class MainActivity : AppCompatActivity(), SurfaceTexture.OnFrameAvailableListene
             setVideoEncodingBitRate(1_000_000)
             setVideoFrameRate(30)
             setVideoSize(CAMERA_RESOLTION_WIDTH, CAMERA_RESOLTION_HEIGHT)
-            setAudioSamplingRate(44100)
-            setOutputFile(File(getExternalFilesDir(null), "${System.currentTimeMillis()}.mp4"))
+            setAudioSamplingRate(44_100)
+            mediaRecorderFile = File(getExternalFilesDir(null), "${System.currentTimeMillis()}.mp4")
+            setOutputFile(mediaRecorderFile)
             prepare()
         }
     }
