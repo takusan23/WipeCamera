@@ -124,10 +124,14 @@ class MainActivity : AppCompatActivity(), SurfaceTexture.OnFrameAvailableListene
     private fun getCameraIdData(): Pair<String, String> {
         var backCameraId = ""
         var frontCameraId = ""
-        cameraManager.cameraIdList.forEach { cameraId ->
+        for (cameraId in cameraManager.cameraIdList) {
             when (cameraManager.getCameraCharacteristics(cameraId).get(CameraCharacteristics.LENS_FACING)) {
                 CameraCharacteristics.LENS_FACING_BACK -> backCameraId = cameraId
                 CameraCharacteristics.LENS_FACING_FRONT -> frontCameraId = cameraId
+            }
+            // 両方揃ったら return
+            if (backCameraId.isNotEmpty() && frontCameraId.isNotEmpty()) {
+                break
             }
         }
         return backCameraId to frontCameraId

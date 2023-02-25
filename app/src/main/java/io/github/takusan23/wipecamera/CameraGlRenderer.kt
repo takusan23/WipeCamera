@@ -178,6 +178,7 @@ class CameraGlRenderer(
         GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT or GLES20.GL_COLOR_BUFFER_BIT)
     }
 
+    /** バックカメラの映像 [SurfaceTexture] を描画する */
     private fun drawBackCamera(surfaceTexture: SurfaceTexture) {
         // テクスチャ更新。呼ばないと真っ黒
         surfaceTexture.updateTexImage()
@@ -222,6 +223,7 @@ class CameraGlRenderer(
         checkGlError("glDrawArrays BackCamera")
     }
 
+    /** フロントカメラの映像 [SurfaceTexture] を描画する */
     private fun drawFrontCamera(surfaceTexture: SurfaceTexture) {
         // テクスチャ更新。呼ばないと真っ黒
         surfaceTexture.updateTexImage()
