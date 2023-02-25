@@ -10,6 +10,14 @@ import java.nio.ByteOrder
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
+/**
+ * カメラをレンダリングする
+ * カメラの映像は、[SurfaceTexture]を利用することで、OpenGLのテクスチャとして利用ができる。
+ *
+ * @param onCreatedTextureIds フロントカメラのテクスチャID、バックカメラのテクスチャIDを返す
+ * @param onRequestBackCameraSurfaceTexture バックカメラの [SurfaceTexture]
+ * @param onRequestFrontCameraSurfaceTexture フロントカメラの [SurfaceTexture]
+ */
 class CameraGlRenderer(
     private val onCreatedTextureIds: (backCameraTextureId: Int, frontCameraTextureId: Int) -> Unit,
     private val onRequestBackCameraSurfaceTexture: () -> SurfaceTexture,

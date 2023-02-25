@@ -40,6 +40,8 @@ class MainActivity : AppCompatActivity(), SurfaceTexture.OnFrameAvailableListene
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // setContentView() GLSurfaceView インスタンス生成後に呼んでいます
+        supportActionBar?.hide()
 
         // 権限チェック
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {

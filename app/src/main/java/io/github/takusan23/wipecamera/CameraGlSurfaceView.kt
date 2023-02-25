@@ -4,7 +4,14 @@ import android.content.Context
 import android.graphics.SurfaceTexture
 import android.opengl.GLSurfaceView
 
-/** カメラのプレビューを OpenGL でレンダリングする */
+/**
+ * カメラのプレビューを OpenGL でレンダリングする
+ * 詳しくは [CameraGlRenderer] を参照してください
+ *
+ * @param onCreatedTextureIds フロントカメラのテクスチャID、バックカメラのテクスチャIDを返す
+ * @param onRequestBackCameraSurfaceTexture バックカメラの [SurfaceTexture]
+ * @param onRequestFrontCameraSurfaceTexture フロントカメラの [SurfaceTexture]
+ */
 class CameraGlSurfaceView(
     context: Context,
     onCreatedTextureIds: (backCameraTextureId: Int, frontCameraTextureId: Int) -> Unit,
