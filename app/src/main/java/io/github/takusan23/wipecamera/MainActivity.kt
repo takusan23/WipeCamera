@@ -123,8 +123,9 @@ class MainActivity : AppCompatActivity(), SurfaceTexture.OnFrameAvailableListene
                     // MediaStore (ギャラリーアプリ) に登録する
                     MediaStoreTool.insertVideo(this@MainActivity, mediaRecorderFile!!)
                     mediaRecorderFile?.delete()
-                    // 次の録画用に
-                    setMediaRecorderParams(mediaRecorder)
+                    // TODO MediaRecorder を作り直して OpenGL も作り直す
+                    // そのためには setupCamera からやる必要があり
+                    // ただ、Surfaceまわりで躓くかも
                     Toast.makeText(this@MainActivity, "終了", Toast.LENGTH_SHORT).show()
                     viewBinding.recordButton.setImageResource(R.drawable.outline_videocam_24)
                 }
