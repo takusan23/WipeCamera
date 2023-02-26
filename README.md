@@ -15,3 +15,6 @@ OpenGL を利用してアウトカメラとフロントカメラを描画して�
 シェーダーはよくわかりませんがなんか動いています。
 
 ![figma](https://user-images.githubusercontent.com/32033405/221419912-2eb50cbc-c255-4c5f-96d7-1ee2356159d3.png)
+
+シェーダーは AOSP のをそのまま使ってます。よくわからん；；  
+https://cs.android.com/android/platform/superproject/+/master:cts/tests/tests/media/common/src/android/media/cts/InputSurface.java
